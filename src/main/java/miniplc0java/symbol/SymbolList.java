@@ -102,13 +102,13 @@ public class SymbolList {
     public Symbol find(String name) {
         Symbol out = null;
         SymbolBlock loc = getNow();
-        while (true) {
+        do{
             out = loc.getValue(name);
             if (loc.getUplevel() == -1 || out == null) {
                 break;
             }
             loc = symbolBlockList.get(loc.getUplevel());
-        }
+        } while (out == null);
         return out;
     }
     /**
