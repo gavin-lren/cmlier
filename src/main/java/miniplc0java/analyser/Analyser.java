@@ -801,7 +801,7 @@ public final class Analyser {
         switch (peeked.getTokenType()) {
             case UINT_LITERAL:
                 expect(TokenType.UINT_LITERAL);
-                long int64 = (long) peeked.getValue();
+                long int64 = Long.valueOf(token.getValue().toString());
                 fun.inList.add(new Instruction(Operation.PUSH, false, int64));
                 return "int";
             case STRING_LITERAL:
