@@ -139,6 +139,7 @@ public final class Analyser {
      * <主程序> -> <声明>
      */
     public void analyseProgram() throws CompileError {
+        
         analyseDeclaration();
     }
 
@@ -149,6 +150,7 @@ public final class Analyser {
      * @throws CompileError
      */
     private void analyseDeclaration() throws CompileError {
+        
         boolean end = true;
         while (end) {
             var peeked = peek();
@@ -402,6 +404,7 @@ public final class Analyser {
                 break;
             }
             analyseStmt();
+            peeked = peek();
         }
         expect(TokenType.R_BRACE);
         level--;
@@ -428,34 +431,42 @@ public final class Analyser {
                 case DOUBLE_LITERAL:
                 case STRING_LITERAL:
                     analyseExprA();
-
+                    flag = false;
                     break;
                 // <声明语句>
                 case LET_KW:
                     analyseLetDec();
+                    flag = false;
                     break;
                 case CONST_KW:
                     analyseConDec();
+                    flag = false;
                     break;
                 // <if语句>
                 case IF_KW:
                     analyseIf();
+                    flag = false;
                     break;
                 // <while语句>
                 case WHILE_KW:
                     analyseWhile();
+                    flag = false;
                     break;
                 // <返回语句>
                 case RETURN_KW:
                     analyseReturn();
+                    flag = false;
+                    
                     break;
                 // <块语句>
                 case L_BRACE:
                     analyseBlockstmt();
+                    flag = false;
                     break;
                 // <空语句>
                 case SEMICOLON:
                     expect(TokenType.SEMICOLON);
+                    flag = false;
                     break;
                 default:
                     flag = false;
@@ -532,7 +543,7 @@ public final class Analyser {
             ret = "void";
             expect(TokenType.SEMICOLON);
         }
-        if (ret.equals(fun.getType())) {
+        if (!ret.equals(fun.getType())) {
             throw new AnalyzeError(ErrorCode.InvalidReturn, type.getStartPos());
         }
         fun.inList.add(new Instruction(Operation.RET));
@@ -613,6 +624,7 @@ public final class Analyser {
         if (!ret.equals(flag)) {
             throw new AnalyzeError(ErrorCode.InvalidReturn, peeked.getStartPos());
         }
+        
         switch (ret) {
             case "int":
                 fun.inList.add(new Instruction(Operation.CMP_I));
@@ -653,6 +665,7 @@ public final class Analyser {
      * @throws CompileError
      */
     private String analyseExprC() throws CompileError {
+        
         String ret = analyseExprD();
         String flag;
         Token name;
@@ -797,11 +810,12 @@ public final class Analyser {
      * @throws CompileError
      */
     private String analyseExprG() throws CompileError {
+        
         var peeked = peek();
         switch (peeked.getTokenType()) {
             case UINT_LITERAL:
                 expect(TokenType.UINT_LITERAL);
-                long int64 = Long.valueOf(token.getValue().toString());
+                long int64 = Long.valueOf(peeked.getValue().toString());
                 fun.inList.add(new Instruction(Operation.PUSH, false, int64));
                 return "int";
             case STRING_LITERAL:
@@ -831,7 +845,8 @@ public final class Analyser {
                 return ret;
             case IDENT:
                 Token name=expect(TokenType.IDENT);
-                var nextpeeked=peek();
+                var nextpeeked = peek();
+                
                 if (nextpeeked.getTokenType() == TokenType.L_PAREN) {
                     expect(TokenType.L_PAREN);
 
@@ -847,9 +862,10 @@ public final class Analyser {
                     boolean flag=false;
                     for(Map.Entry<String,Symbol>entry:symbolList.getFunLoc(funG).getSymbolBlock().entrySet()){
                         Symbol var =entry.getValue();
-                        if(!var.isParam()){
+                        if (!var.isParam()) {
                             break;
                         }
+                        
                         if(flag){
                             expect(TokenType.COMMA);
                         }
@@ -869,19 +885,20 @@ public final class Analyser {
 
                     return funG.getType();
                 } 
-                else{
-                    Symbol var=symbolList.find(name.getValueString());
-                    if(var==null || var.isFunOrVar()==true){
+                else {
+                    Symbol var = symbolList.find(name.getValueString());
+                    if (var == null || var.isFunOrVar() == true) {
                         throw new AnalyzeError(ErrorCode.NotDeclared, name.getStartPos());
                     }
                     if(var.isGlobal()){
                         fun.inList.add(new Instruction(Operation.GLOBA,true,var.getGlobal()));
                     }else if(!var.isParam()){
                         fun.inList.add(new Instruction(Operation.LOCA,true,var.getLocal()));
-                    }else{
-                        fun.inList.add(new Instruction(Operation.ARGA,true,var.getParam()+(fun.getType().equals("void")?0:1)));
-                        
+                    } else {
+                        fun.inList.add(new Instruction(Operation.ARGA, true,
+                                var.getParam() + (fun.getType().equals("void") ? 0 : 1)));
                     }
+                    
                     fun.inList.add(new Instruction(Operation.LOAD_64));
                     return var.getType();
                 }
