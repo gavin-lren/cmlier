@@ -1,11 +1,11 @@
 package miniplc0java.symbol;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 
 public class SymbolBlock {
-    private HashMap<String, Symbol> symMap = new HashMap<>();
+    private LinkedHashMap<String, Symbol> symMap = new LinkedHashMap<>();
     private int level;
     private int uplevel;
 
@@ -45,7 +45,7 @@ public class SymbolBlock {
         symMap.put(key, symbol);
     }
 
-    public HashMap<String, Symbol> getSymbolBlock() {
+    public LinkedHashMap<String, Symbol> getSymbolBlock() {
         return this.symMap;
     }
 

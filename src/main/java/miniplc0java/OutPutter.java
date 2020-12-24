@@ -55,7 +55,7 @@ public class OutPutter {
         SymbolBlock functionTable = analyser.symbolList.getFun();
         // count
         outList.addAll(byteTrans(4, functionTable.getSize()));
-
+        i = 0;
         for (Map.Entry<String, Symbol> entry : functionTable.getSymbolBlock().entrySet()) {
 
             Symbol fn = entry.getValue();
@@ -79,7 +79,7 @@ public class OutPutter {
                 }
 
                 else if (ins.isis_n()) {
-                    if (ins.getOpt() == Operation.PUSH) {
+                    if (ins.getOpt() == Operation.PUSH && ins.isIs_d()==false) {
                         outList.addAll(byteTrans(8, ins.getNum_64()));
                     } else if (ins.isIs_d())
                         outList.addAll(byteTrans(8, ins.getNum_d()));

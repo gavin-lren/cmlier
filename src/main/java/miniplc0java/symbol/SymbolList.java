@@ -1,9 +1,10 @@
 package miniplc0java.symbol;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SymbolList {
-    private ArrayList<SymbolBlock> symbolBlockList = new ArrayList<>();
+    private List<SymbolBlock> symbolBlockList = new ArrayList<>();
     /**
      * 获取当前符号表的block层数
      * @return
