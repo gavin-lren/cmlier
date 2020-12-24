@@ -57,7 +57,7 @@ public class SymbolList {
      * @return
      */
     public SymbolBlock getGloba() {
-        return symbolBlockList.get(1);
+        return symbolBlockList.get(2);
     }
     /**
      * 获取当前局部变量block
@@ -88,7 +88,7 @@ public class SymbolList {
         
         //设置上一层block的值
         if (now.getLevel() == up.getLevel()) {
-            now.setUplevel(up.getLevel());
+            now.setUplevel(up.getUplevel());
         } else {
             now.setUplevel(symbolBlockList.size() - 1);
         }
