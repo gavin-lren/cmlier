@@ -91,9 +91,9 @@ public class Instruction {
                     if (is_d) {
                         return "push " + num_d;
                     } else if (is_u) {
-                        return "push " + num_64;
-                    } else {
                         return "push " + num_32;
+                    } else {
+                        return "push " + num_64;
                     }
                 }
                 return "push";   
