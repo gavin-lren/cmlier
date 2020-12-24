@@ -234,16 +234,28 @@ public class Tokenizer {
             switch (it.peekChar()) {
                 case '\\':
                     obs = '\\';
+                    it.nextChar();
+                    break;
                 case '\"':
                     obs = '\"';
+                    it.nextChar();
+                    break;
                 case '\'':
                     obs = '\'';
+                    it.nextChar();
+                    break;
                 case 'n':
                     obs = '\n';
+                    it.nextChar();
+                    break;
                 case 'r':
                     obs = '\r';
+                    it.nextChar();
+                    break;
                 case 't':
                     obs = '\t';
+                    it.nextChar();
+                    break;
                 default:
                     throw new TokenizeError(ErrorCode.InvalidInput, pre);
             }
@@ -276,19 +288,32 @@ public class Tokenizer {
                     throw new TokenizeError(ErrorCode.InvalidInput, pre);
                 case '\\':
                     it.nextChar();
-                    switch (it.peekChar()) {
+                    char peeked = it.peekChar();
+                    switch (peeked) {
                         case '\\':
                             obs.append("\\");
+                            it.nextChar();
+                            break;
                         case '\"':
                             obs.append("\"");
+                            it.nextChar();
+                            break;
                         case '\'':
                             obs.append("\'");
+                            it.nextChar();
+                            break;
                         case 'n':
                             obs.append("\n");
+                            it.nextChar();
+                            break;
                         case 'r':
                             obs.append("\r");
+                            it.nextChar();
+                            break;
                         case 't':
                             obs.append("\t");
+                            it.nextChar();
+                            break;
                         default:
                             throw new TokenizeError(ErrorCode.InvalidInput, pre);
                     }

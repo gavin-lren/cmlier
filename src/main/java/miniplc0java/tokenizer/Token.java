@@ -40,10 +40,8 @@ public class Token {
     }
 
     public String getValueString() {
-        if (value instanceof Integer || value instanceof String || value instanceof Character) {
-            return value.toString();
-        }
-        throw new Error("No suitable cast for token value.");
+        return value.toString();
+        
     }
 
     public TokenType getTokenType() {
