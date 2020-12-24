@@ -42,6 +42,7 @@ public class Test {
         var outPutter = new OutPutter(analyser);
         outPutter.getBinaryList();
         outPutter.print(output);
+    
     }
 
     private static Tokenizer tokenize(StringIter iter) {

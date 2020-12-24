@@ -127,15 +127,26 @@ public class Symbol {
     
 
     //
-    public Symbol(boolean isFunOrVar ,int global, int local, int param) {
+    public Symbol(boolean isFunOrVar, int global, int local, int param) {
         this.isFunOrVar = isFunOrVar;
         this.global = global;
         this.local = local;
         this.param = param;
-        if(isFunOrVar)
+        if (isFunOrVar)
             this.inList = new InstructionList();
         else
             this.isConstant = this.isGlobal = this.isInitialized = this.isParam = false;
+    }
+    
+    @Override
+    public String toString() {
+        if (this.isFunOrVar == true) {
+            return "index_global: " + getLocal() + " index_local: " + getGlobal() + " index_prarm: " + getParam()
+                    + " rettype:" + type + "\n" + inList.toString();
+        }
+        return "is Constant: " + isConstant + " is Global:" + isGlobal + 
+        " is Param:" + isParam +
+        " datatype:" + type + "\n";
     }
 }
 

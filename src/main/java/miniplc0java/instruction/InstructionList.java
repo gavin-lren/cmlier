@@ -38,4 +38,13 @@ public class InstructionList {
         }
         System.out.println("");
     }
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder("");
+        for(int i = 0; i<instructionList.size(); i++){
+            s.append(instructionList.get(i) + "\n");
+        }
+        s.append("\n");
+        return s.toString();
+    }
 }

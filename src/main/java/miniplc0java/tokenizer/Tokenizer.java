@@ -38,7 +38,8 @@ public class Tokenizer {
         }
         //注释
         else if (peek == '/') {
-            return lexComment();
+            lexComment();
+            return nextToken();
         }
         //操作符或非法
         else {

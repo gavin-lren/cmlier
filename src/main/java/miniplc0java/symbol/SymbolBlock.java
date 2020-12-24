@@ -52,5 +52,19 @@ public class SymbolBlock {
     public void cat(SymbolBlock cat) {
         for (Map.Entry<String, Symbol> entry : cat.getSymbolBlock().entrySet())
             this.symMap.put(entry.getKey(), entry.getValue());
-    }    
+    }
+    
+    @Override
+    public String toString(){
+        StringBuilder s = new StringBuilder("");
+        s.append("father: " + uplevel + "\n");
+        if(symMap.isEmpty()){
+            s.append("the table is empty\n");
+        }
+        else
+            for (Map.Entry<String, Symbol> entry: symMap.entrySet())
+                s.append("name: " + entry.getKey() + ", " + entry.getValue().toString());
+        
+                return s.toString() + "\n";
+    }
 }

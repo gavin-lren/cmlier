@@ -328,7 +328,7 @@ public final class Analyser {
             } else {
                 fun.inList.add(new Instruction(Operation.LOCA,true,var.getLocal()));
             }
-            if(var.getType().equals(analyseExprB())){
+            if(!var.getType().equals(analyseExprB())){
                 throw new AnalyzeError(ErrorCode.InvalidReturn, name.getStartPos());
             }
             fun.inList.add(new Instruction(Operation.STORE_64));
@@ -400,7 +400,7 @@ public final class Analyser {
         
         var peeked=peek();
         while (true) {
-            if (peeked.getTokenType() == TokenType.R_BRACE) {
+            if (peeked.getTokenType() == TokenType.R_BRACE||peeked.getTokenType()==TokenType.EOF) {
                 break;
             }
             analyseStmt();
@@ -469,8 +469,7 @@ public final class Analyser {
                     flag = false;
                     break;
                 default:
-                    flag = false;
-                    break;
+                    throw new AnalyzeError(ErrorCode.InvalidReturn, peeked.getStartPos());
             }
         }
     }
