@@ -74,17 +74,20 @@ public class OutPutter {
                         outList.addAll(byteTrans(4, ins.getNum_32() + preGlobalSymbolTableSize));
                     } else if (ins.getOpt() == Operation.PUSH) {
                         outList.addAll(
-                                byteTrans(8, ins.getNum_32() + preGlobalSymbolTableSize + preFunctionSymbolTableSize));
+                                byteTrans(8, (long)(ins.getNum_64() + preGlobalSymbolTableSize + preFunctionSymbolTableSize)));
                     }
                 }
 
                 else if (ins.isis_n()) {
-                    if (ins.getOpt() == Operation.PUSH && ins.isIs_d()==false) {
-                        outList.addAll(byteTrans(8, ins.getNum_64()));
-                    } else if (ins.isIs_d())
+                    if (ins.getOpt() == Operation.PUSH && ins.isIs_d()) {
                         outList.addAll(byteTrans(8, ins.getNum_d()));
-                    else
+                        
+                    } else if (ins.getOpt() == Operation.PUSH) {
+                        outList.addAll(byteTrans(8, ins.getNum_64()));
+                    }
+                    else {
                         outList.addAll(byteTrans(4, ins.getNum_32()));
+                    }
                 }
 
             }
@@ -108,7 +111,7 @@ public class OutPutter {
                 a[i] = (outList.get(k) >> i) & 0x0001;
             }
             bytes[k] = outList.get(k);
-            //System.out.print("" + a[7] + a[6] + " " + a[5] + a[4] + " " + a[3] + a[2] + " " + a[1] + a[0] + "(" + byteList.get(k) + ")" + "\n");
+            
         }
         output.write(bytes);
     }

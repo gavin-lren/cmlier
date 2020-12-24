@@ -37,7 +37,8 @@ public final class Analyser {
 
     int slotloc;
     int slotparam;
-
+    int breakins;
+    int continueins;
     Symbol fun;
     SymbolBlock funParam;
 
@@ -198,6 +199,8 @@ public final class Analyser {
         slotloc = 0;
         slotparam = 0;
         isRet = false;
+        breakins = -1;
+        continueins = -1;
 
         Token name = expect(TokenType.IDENT);
         //定义为int double void
@@ -218,24 +221,26 @@ public final class Analyser {
         }
 
         fun.setParam(slotparam);
+
         expect(TokenType.R_PAREN);
         expect(TokenType.ARROW);
 
         Token type = expect(TokenType.TY_KW);
         fun.setType(type.getValueString());
-        symbolList.getFun().putValue(name.getValueString(), fun);
-
-        analyseBlockstmt();
 
         if (type.getValueString().toLowerCase().equals("void")) {
             slotret = 0;
         } else {
             slotret = 1;
         }
-
         fun.setSlotret(slotret);
+
+        symbolList.getFun().putValue(name.getValueString(), fun);
+
+        analyseBlockstmt();
+
         fun.setSlotloc(slotloc);
-        fun.setParam(slotparam);
+
         if (!isRet && fun.getType().toLowerCase().equals("void")) {
             fun.inList.add(new Instruction(Operation.RET));
         } else if (!isRet) {
@@ -264,7 +269,7 @@ public final class Analyser {
      */
     private void analyseFunPar() throws CompileError {
         Symbol var = new Symbol(false, -1, -1, slotparam);
-        var.setInitialized(true);
+        //var.setInitialized(true);
 
         var peeked = peek();
         if (peeked.getTokenType() == TokenType.CONST_KW) {
@@ -334,7 +339,7 @@ public final class Analyser {
                 throw new AnalyzeError(ErrorCode.InvalidReturn, name.getStartPos());
             }
             fun.inList.add(new Instruction(Operation.STORE_64));
-            var.setInitialized(true);
+            //var.setInitialized(true);
         }
         expect(TokenType.SEMICOLON);
     }
@@ -383,7 +388,7 @@ public final class Analyser {
             throw new AnalyzeError(ErrorCode.InvalidReturn, name.getStartPos());
         }
         fun.inList.add(new Instruction(Operation.STORE_64));
-        var.setInitialized(true);
+        //var.setInitialized(true);
 
         expect(TokenType.SEMICOLON);
     }
@@ -410,7 +415,7 @@ public final class Analyser {
         }
         expect(TokenType.R_BRACE);
         level--;
-        if (level > 0) {
+        if (level != 0) {
             symbolList.removeSymbolBlock();
         }
     }
@@ -421,8 +426,6 @@ public final class Analyser {
      * @throws CompileError
      */
     private void analyseStmt() throws CompileError {
-        boolean flag = true;
-        while (flag) {
             var peeked = peek();
             switch (peeked.getTokenType()) {
                 // <表达式语句>
@@ -432,48 +435,47 @@ public final class Analyser {
                 case UINT_LITERAL:
                 case DOUBLE_LITERAL:
                 case STRING_LITERAL:
-                    analyseExprA();
-                    flag = false;
+                    if (!analyseExprA()) {
+                        fun.inList.add(new Instruction(Operation.POPN,true,1));
+                    }
                     break;
                 // <声明语句>
                 case LET_KW:
                     analyseLetDec();
-                    flag = false;
+
                     break;
                 case CONST_KW:
                     analyseConDec();
-                    flag = false;
                     break;
                 // <if语句>
                 case IF_KW:
                     analyseIf();
-                    flag = false;
                     break;
                 // <while语句>
                 case WHILE_KW:
                     analyseWhile();
-                    flag = false;
                     break;
                 // <返回语句>
                 case RETURN_KW:
                     analyseReturn();
-                    flag = false;
-                    
                     break;
                 // <块语句>
                 case L_BRACE:
                     analyseBlockstmt();
-                    flag = false;
                     break;
                 // <空语句>
                 case SEMICOLON:
                     expect(TokenType.SEMICOLON);
-                    flag = false;
+                    break;
+                case BREAK_KW:
+                    analyseBreak();
+                    break;
+                case CONTINUE_KW:
+                    analyseContinue();
                     break;
                 default:
                     throw new AnalyzeError(ErrorCode.InvalidReturn, peeked.getStartPos());
             }
-        }
     }
 
     /**
@@ -482,6 +484,10 @@ public final class Analyser {
      * @throws CompileError
      */
     private void analyseIf() throws CompileError {
+        boolean temp = isRet;
+        boolean ifhasret = true;
+        isRet = false;
+
         expect(TokenType.IF_KW);
         analyseExprB();
         fun.inList.add(new Instruction(Operation.BR_TRUE,true,1));
@@ -492,19 +498,29 @@ public final class Analyser {
         fun.inList.add(new Instruction(Operation.BR, true, 0));
         fun.inList.get(ifsize - 1).setNum_32(fun.inList.size() - ifsize);
         
+        if (!isRet) {
+            ifhasret = false;
+        }
+        isRet = false;
+
         var peeked = peek();
         if (peeked.getTokenType() == TokenType.ELSE_KW) {
             expect(TokenType.ELSE_KW);
             int elsesize = fun.inList.size();
+
             peeked = peek();
             if (peeked.getTokenType() == TokenType.L_BRACE) {
-                analyseBlockstmt();
+                analyseStmt();
             } else if (peeked.getTokenType() == TokenType.IF_KW) {
-                analyseIf();
+                analyseBlockstmt();
             }
-            fun.inList.get(elsesize-1).setNum_32(fun.inList.size()-elsesize);
+            fun.inList.get(elsesize - 1).setNum_32(fun.inList.size() - elsesize);
             peeked = peek();
         }
+        if (!isRet) {
+            ifhasret = false;
+        }
+        isRet = temp || ifhasret;
     }
 
     /**
@@ -513,17 +529,27 @@ public final class Analyser {
      * @throws CompileError
      */
     private void analyseWhile() throws CompileError {
+        boolean temp = isRet;
+        int tempbreakins = breakins;
+        int tempcontinueins = continueins;
+
         expect(TokenType.WHILE_KW);
         
-        int insize = fun.inList.size();
+        continueins = fun.inList.size();
         analyseExprB();
+
         fun.inList.add(new Instruction(Operation.BR_TRUE, true, 1));
-        fun.inList.add(new Instruction(Operation.BR, true, 0));
-        
+        breakins = fun.inList.size();
+        fun.inList.add(new Instruction(Operation.BR, true, 0));        
         int whilesize = fun.inList.size();
+
         analyseBlockstmt();
-        fun.inList.add(new Instruction(Operation.BR, true, -(fun.inList.size() - insize)));
+        fun.inList.add(new Instruction(Operation.BR, true, 0));
+        fun.inList.get(fun.inList.size()-1).setNum_32(continueins - fun.inList.size());
         fun.inList.get(whilesize - 1).setNum_32(fun.inList.size() - whilesize);
+        breakins = tempbreakins;
+        continueins = tempcontinueins;
+        isRet = temp;
     }
 
     /**
@@ -551,6 +577,25 @@ public final class Analyser {
         expect(TokenType.SEMICOLON);
     }
 
+    private void analyseContinue() throws CompileError {
+        expect(TokenType.CONTINUE_KW);
+        if (continueins == -1) {
+            throw new AnalyzeError(ErrorCode.NoError, peek().getStartPos());
+        }
+        fun.inList.add(new Instruction(Operation.BR, true, 0));
+        fun.inList.get(fun.inList.size() - 1).setNum_32(continueins - fun.inList.size());
+        expect(TokenType.SEMICOLON);
+    }
+
+    private void analyseBreak()throws CompileError {
+        expect(TokenType.BREAK_KW);
+        if (continueins == -1) {
+            throw new AnalyzeError(ErrorCode.NoError, peek().getStartPos());
+        }
+        fun.inList.add(new Instruction(Operation.BR, true, 0));
+        fun.inList.get(fun.inList.size() - 1).setNum_32(breakins - fun.inList.size());
+        expect(TokenType.SEMICOLON);
+    }
     /**
      * <exprA> -> <exprB> ('=' <exprB>)?
      * @throws CompileError
@@ -824,10 +869,11 @@ public final class Analyser {
                 expect(TokenType.STRING_LITERAL);
                 Symbol string=symbolList.getString().getValue(peeked.getValueString());
                 if(string ==null){
-                    string =new Symbol(false,symbolList.getString().getSize(),-1,-1);
+                    string = new Symbol(false, symbolList.getString().getSize(), -1, -1);
+                    string.setGlobal(symbolList.getString().getSize());
                     symbolList.getString().putValue(peeked.getValueString(), string);
                 }
-                Instruction ins=new Instruction(Operation.PUSH,false,(long)string.getGlobal());
+                Instruction ins=new Instruction(Operation.PUSH,false,(long)(string.getGlobal()));
                 ins.setIsreloc(true);
                 fun.inList.add(ins);
                 return "int";
