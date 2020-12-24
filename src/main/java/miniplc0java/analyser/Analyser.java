@@ -882,7 +882,7 @@ public final class Analyser {
                         ins.setIsreloc(true);
                         fun.inList.add(ins);
                     }else{
-                        fun.inList.add(new Instruction(Operation.CALL,true,fun.getGlobal()));
+                        fun.inList.add(new Instruction(Operation.CALL,true,funG.getGlobal()));
                     }
 
                     return funG.getType();
