@@ -14,16 +14,19 @@ public class Instruction {
     public Instruction(Operation opt) {
         this.opt = opt;
         this.is_n = false;
+        this.isreloc = false;
     }
 
     public Instruction(Operation opt, boolean is_32, long num_64) {
         this.opt = opt;
         this.is_n = true;
+        //this.is_u = false;
         this.is_d = false;
-        if (is_32)
+        if (is_32) {
             this.num_32 = (int) num_64;
-        else
+        } else {
             this.num_64 = num_64;
+        }
     }
 
     public Instruction(Operation opt, double num_d) {

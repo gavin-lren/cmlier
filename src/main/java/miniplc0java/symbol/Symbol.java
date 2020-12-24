@@ -141,8 +141,16 @@ public class Symbol {
     @Override
     public String toString() {
         if (this.isFunOrVar == true) {
-            return "index_global: " + getLocal() + " index_local: " + getGlobal() + " index_prarm: " + getParam()
-                    + " rettype:" + type + "\n" + inList.toString();
+            return "index_global: " + getGlobal()
+                    +
+        " index_local: " +  getLocal() + 
+        " index_prarm: " + getParam() +
+        " rettype:" + type
+                    + 
+        " param_slot:" + slotparam + 
+        " loc_slot:" + slotloc +
+        " ret_slot" + slotret +
+        "\n" + inList.toString();
         }
         return "is Constant: " + isConstant + " is Global:" + isGlobal + 
         " is Param:" + isParam +

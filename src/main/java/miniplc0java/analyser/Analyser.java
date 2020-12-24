@@ -216,6 +216,8 @@ public final class Analyser {
         if (peeked.getTokenType() == TokenType.CONST_KW || peeked.getTokenType() == TokenType.IDENT) {
             analyseFunParList();
         }
+
+        fun.setParam(slotparam);
         expect(TokenType.R_PAREN);
         expect(TokenType.ARROW);
 
@@ -569,7 +571,7 @@ public final class Analyser {
             if (var == null || var.isFunOrVar() == true) {
                 throw new AnalyzeError(ErrorCode.NotDeclared, peeked.getStartPos());
             }
-            if (var.getType().equals(analyseExprB())) {
+            if (!var.getType().equals(analyseExprB())) {
                 throw new AnalyzeError(ErrorCode.NotDeclared, peeked.getStartPos());
             }
 
@@ -815,6 +817,7 @@ public final class Analyser {
             case UINT_LITERAL:
                 expect(TokenType.UINT_LITERAL);
                 long int64 = Long.valueOf(peeked.getValue().toString());
+                
                 fun.inList.add(new Instruction(Operation.PUSH, false, int64));
                 return "int";
             case STRING_LITERAL:
@@ -830,7 +833,7 @@ public final class Analyser {
                 return "int";
             case DOUBLE_LITERAL:
                 expect(TokenType.DOUBLE_LITERAL);
-                double double64=(double)(peeked.getValue());
+                double double64 = (double) (peeked.getValue());
                 fun.inList.add(new Instruction(Operation.PUSH,double64));
                 return "double";
             case CHAR_LITERAL:

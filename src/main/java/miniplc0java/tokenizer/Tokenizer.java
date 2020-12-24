@@ -36,14 +36,15 @@ public class Tokenizer {
         else if (peek == '\"') {
             return lexString();
         }
-        //注释
-        else if (peek == '/') {
-            lexComment();
-            return nextToken();
-        }
-        //操作符或非法
+        //操作符或非法或注释
         else {
-            return lexOperatorOrUnknown();
+            Token peeked = lexOperatorOrUnknown();
+            if (peeked.getTokenType() == TokenType.COMMENT) {
+                return nextToken();
+            }
+            else {
+                return peeked;
+            }
         }
     }
 
@@ -171,6 +172,9 @@ public class Tokenizer {
             case '*':
                 return new Token(TokenType.MUL, '*', pre, it.currentPos());
             case '/':
+                if (it.peekChar() == '/') {
+                    return lexComment();
+                }
                 return new Token(TokenType.DIV, '/', pre, it.currentPos());
             case '=':
                 if (it.peekChar() == '=') {
@@ -301,10 +305,6 @@ public class Tokenizer {
         Pos pre = it.currentPos();
         it.nextChar();
         StringBuilder obs = new StringBuilder("");
-        if (it.peekChar() != '/') {
-            return new Token(TokenType.DIV, obs, pre, it.currentPos());
-        }
-        it.nextChar();
         while (it.peekChar() != '\n' && !it.isEOF()) {
             obs.append(it.nextChar());
         }

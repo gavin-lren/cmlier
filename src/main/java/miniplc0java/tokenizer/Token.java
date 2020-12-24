@@ -1,7 +1,6 @@
 package miniplc0java.tokenizer;
 
 import miniplc0java.util.Pos;
-
 import java.util.Objects;
 
 public class Token {

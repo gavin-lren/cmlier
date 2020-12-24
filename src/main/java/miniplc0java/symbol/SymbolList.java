@@ -16,20 +16,27 @@ public class SymbolList {
      * 全局变量的block为0，上层为-1
      */
     public SymbolList() {
+        SymbolBlock funSymbolBlock = new SymbolBlock(-1);
+        funSymbolBlock.setUplevel(-1);
+
+        SymbolBlock stringSymbolBlock = new SymbolBlock(-1);
+        stringSymbolBlock.setUplevel(-1);
+
+        SymbolBlock globalSymbolBlock = new SymbolBlock(0);
+        globalSymbolBlock.setUplevel(1);
+        
+        
+
         Symbol start = new Symbol(true, 0, -1, -1);
-        start.setType("VOID");
+        start.setType("void");
         start.setSlotloc(0);
         start.setSlotparam(0);
         start.setSlotret(0);
-
-        SymbolBlock funSymbolBlock = new SymbolBlock(-1);
-        SymbolBlock globalSymbolBlock = new SymbolBlock(0);
-        funSymbolBlock.setUplevel(-1);
-        globalSymbolBlock.setUplevel(0);
-
         funSymbolBlock.putValue("_start", start);
         symbolBlockList.add(funSymbolBlock);
+        symbolBlockList.add(stringSymbolBlock);
         symbolBlockList.add(globalSymbolBlock);
+        
     }
     /**
      * 获取函数block
@@ -78,13 +85,14 @@ public class SymbolList {
     public void addSymbolBlock(int level) {
         SymbolBlock now = new SymbolBlock(level);
         SymbolBlock up = symbolBlockList.get(symbolBlockList.size() - 1);
-        symbolBlockList.add(now);
+        
         //设置上一层block的值
         if (now.getLevel() == up.getLevel()) {
             now.setUplevel(up.getLevel());
         } else {
             now.setUplevel(symbolBlockList.size() - 1);
         }
+        symbolBlockList.add(now);
     }
 
     /**
