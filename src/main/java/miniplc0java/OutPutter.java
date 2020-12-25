@@ -148,14 +148,14 @@ public class OutPutter {
         return bytes;
     }
 
-    public int strLength(String str) {
+    public List<Byte> strLength(String str) {
         List<Byte> str_array=new ArrayList<>();
         for (int i = 0; i < str.length(); i ++) {
             char ch = str.charAt(i);
             str_array.add((byte)(ch & 0xFF));
         }
 
-        return res;
+        return str_array;
     }
 
     public List<Byte> byteTrans(String str) {
