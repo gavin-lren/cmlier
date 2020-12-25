@@ -41,7 +41,7 @@ public class OutPutter {
                 outList.addAll(byteTrans(1, 0));
 
             if (i >= preGlobalSymbolTableSize) {
-                outList.addAll(byteTrans(4, strLength(name)));
+                outList.addAll(byteTrans(4, name.length()));
                 outList.addAll(byteTrans(name));
             } else {
                 outList.addAll(byteTrans(4, 8));
@@ -149,20 +149,10 @@ public class OutPutter {
     }
 
     public int strLength(String str) {
-        int res = 0;
-
+        List<Byte> str_array=new ArrayList<>();
         for (int i = 0; i < str.length(); i ++) {
             char ch = str.charAt(i);
-
-            if (ch == '\\' && i != str.length() - 1) {
-                if (str.charAt(i + 1) == 'n' || str.charAt(i + 1) == 'r'
-                        || str.charAt(i + 1) == 't' || str.charAt(i + 1) == '\''
-                        || str.charAt(i + 1) == '\"' || str.charAt(i + 1) == '\\') {
-                    i++;
-                }
-            }
-
-            res ++;
+            str_array.add((byte)(ch & 0xFF));
         }
 
         return res;
