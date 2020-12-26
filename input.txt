@@ -1,9 +1,0 @@
-
-fn temp(a:int)->int
-{
-    a;
-    return 1;
-}
-fn main() ->int {
-    return 1;
-}
