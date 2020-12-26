@@ -4,11 +4,9 @@ import miniplc0java.error.*;
 import miniplc0java.instruction.*;
 import miniplc0java.symbol.*;
 import miniplc0java.tokenizer.*;
-import miniplc0java.util.Pos;
+import miniplc0java.util.*;
 
 import java.util.*;
-
-
 
 public final class Analyser {
 
@@ -34,14 +32,18 @@ public final class Analyser {
 
     /** block的层级 */
     int level;
-
+    
+    /** 符号表参数 */
     int slotloc;
     int slotparam;
     int breakins;
     int continueins;
+
+    /** 符号表和函数block */
     Symbol fun;
     SymbolBlock funParam;
 
+    /** 是否有返回值 */
     boolean isRet;
 
     public Analyser(Tokenizer tokenizer) {
@@ -91,34 +93,6 @@ public final class Analyser {
     }
 
     /**
-     * 如果下一个 token 的类型是 tt，则返回 true
-     * 
-     * @param tt
-     * @return
-     * @throws TokenizeError
-     */
-    private boolean check(TokenType tt) throws TokenizeError {
-        var token = peek();
-        return token.getTokenType() == tt;
-    }
-
-    /**
-     * 如果下一个 token 的类型是 tt，则前进一个 token 并返回这个 token
-     * 
-     * @param tt 类型
-     * @return 如果匹配则返回这个 token，否则返回 null
-     * @throws TokenizeError
-     */
-    private Token nextIf(TokenType tt) throws TokenizeError {
-        var token = peek();
-        if (token.getTokenType() == tt) {
-            return next();
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * 如果下一个 token 的类型是 tt，则前进一个 token 并返回，否则抛出异常
      * 
      * @param tt 类型
@@ -140,7 +114,6 @@ public final class Analyser {
      * <主程序> -> <声明>
      */
     public void analyseProgram() throws CompileError {
-        
         analyseDeclaration();
     }
 
@@ -182,8 +155,6 @@ public final class Analyser {
         if (main.getSlotret() != 0) {
             start.add(new Instruction(Operation.POPN, true, main.getSlotret()));
         }
-        //test
-        symbolList.print();
     }
 
     /**
@@ -571,13 +542,16 @@ public final class Analyser {
             ret = "void";
             expect(TokenType.SEMICOLON);
         }
-        
         if (!ret.equals(fun.getType())) {
             throw new AnalyzeError(ErrorCode.InvalidReturn, type.getStartPos());
         }
         fun.inList.add(new Instruction(Operation.RET));
     }
-
+    
+    /**
+     * <continue语句> -> 'continue' ';'
+     * @throws CompileError
+     */
     private void analyseContinue() throws CompileError {
         expect(TokenType.CONTINUE_KW);
         if (continueins == -1) {
@@ -587,7 +561,11 @@ public final class Analyser {
         fun.inList.get(fun.inList.size() - 1).setNum_32(continueins - fun.inList.size());
         expect(TokenType.SEMICOLON);
     }
-
+    
+    /**
+     * <break语句> -> 'break' ';'
+     * @throws CompileError
+     */
     private void analyseBreak()throws CompileError {
         expect(TokenType.BREAK_KW);
         if (continueins == -1) {

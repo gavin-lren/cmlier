@@ -1,14 +1,5 @@
 package miniplc0java;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import miniplc0java.analyser.Analyser;
 import miniplc0java.error.CompileError;
 import miniplc0java.tokenizer.StringIter;
@@ -22,6 +13,15 @@ import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class App {
     public static void main(String[] args) throws CompileError, IOException {
         var argparse = buildArgparse();
@@ -32,7 +32,6 @@ public class App {
             argparse.handleError(e1);
             return;
         }
-
         var inputFileName = result.getString("input");
         var outputFileName = result.getString("output");
         InputStream input;
@@ -89,28 +88,22 @@ public class App {
                 output.println(token.toString());
             }
         } else if (result.getBoolean("analyse")) {
-        
-
             iter = new StringIter("fn getint() -> int{return 0;}fn getdouble() -> double{return 0.e0;}fn getchar() -> int{return 0;}fn putint(a:int) -> void{}fn putdouble(a:double) -> void{}fn putchar(a:int) -> void{}fn putstr(a:int) -> void{}fn putln() -> void{}");
             tokenizer = new Tokenizer(iter);
             var analyser = new Analyser(tokenizer);
-            for(int i = 0; i <= 7; i++)
+            for (int i = 0; i <= 7; i++){
                 analyser.analyseFunction();
-
+            }
             scanner = new Scanner(input);
             iter = new StringIter(scanner);
             tokenizer = new Tokenizer(iter);
             analyser.setTokenizer(tokenizer);
-
-        
             try {
                 analyser.analyseProgram();
             } catch (Exception e) {
                 System.exit(1);
             }
-        
             var outPutter = new OutPutter(analyser);
-        
             outPutter.getBinaryList();
             outPutter.print(output);
         }

@@ -1,8 +1,7 @@
 package miniplc0java.tokenizer;
 
-import miniplc0java.error.TokenizeError;
-import miniplc0java.error.ErrorCode;
-import miniplc0java.util.Pos;
+import miniplc0java.error.*;
+import miniplc0java.util.*;
 
 public class Tokenizer {
 
@@ -216,7 +215,7 @@ public class Tokenizer {
             case ';':
                 return new Token(TokenType.SEMICOLON, ';', pre, it.currentPos());
             default:
-                System.out.println(now);
+
                 // 不认识这个输入，摸了
                 throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
         }
@@ -329,7 +328,6 @@ public class Tokenizer {
             }
         }
         it.nextChar();
-        System.out.println(obs.toString());
         return new Token(TokenType.STRING_LITERAL, obs, pre, it.currentPos());
     }
 

@@ -6,9 +6,13 @@ public class Instruction {
     private long num_64;
     private double num_d;
 
+    /**是否为int */
     private boolean is_n;
+    /**是否为32位 */
     private boolean is_u;
+    /**是否为double */
     private boolean is_d;
+    /**是否返回 */
     private boolean isreloc;
 
     public Instruction(Operation opt) {
@@ -119,32 +123,26 @@ public class Instruction {
                 if (is_n)
                     return "globA " + num_32;
                 return "globa";
-            /*
             case LOAD_8:
                 return "load8";
             case LOAD_16:
                 return "load16";
             case LOAD_32:
-                return "load32";
-                */    
+                return "load32";  
             case LOAD_64:
                 return "load64";
-            /*
             case STORE_8:
                 return "store.8";
             case STORE_16:
                 return "srore.16";
             case STORE_32:
                 return "store.32";
-                */
             case STORE_64:
                 return "store64";
-            /*
             case ALLOC:
                 return "alloc";
             case FREE:
                 return "free";
-                */
             case STACKALLOC:
                 if (is_n)
                     return "stackAlloc " + num_32;
@@ -203,9 +201,8 @@ public class Instruction {
                 if (is_n)
                     return "br " + num_32;
                 return "br";
-            /*case BR_FALSE:
+            case BR_FALSE:
                 return "br.false";
-                */
             case BR_TRUE:
                 if (is_n)
                     return "brTrue " + num_32;
@@ -220,7 +217,6 @@ public class Instruction {
                 if (is_n)
                     return "callName " + num_32;
                 return "callname";
-            /*
             case SCAN_I:
                 return "scan.i";
             case SCAN_C:
@@ -237,7 +233,6 @@ public class Instruction {
                 return "print.s";
             case PRINTLN:
                 return "println";
-                */
             default:
                 return "panic";
         }

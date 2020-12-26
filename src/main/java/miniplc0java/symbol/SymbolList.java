@@ -14,20 +14,15 @@ public class SymbolList {
     }
     
     /**
-     * 全局变量的block为0，上层为-1
+     * 初始化符号表，全局变量的block为0，上层为-1
      */
     public SymbolList() {
         SymbolBlock funSymbolBlock = new SymbolBlock(-1);
         funSymbolBlock.setUplevel(-1);
-
         SymbolBlock stringSymbolBlock = new SymbolBlock(-1);
         stringSymbolBlock.setUplevel(-1);
-
         SymbolBlock globalSymbolBlock = new SymbolBlock(0);
         globalSymbolBlock.setUplevel(1);
-        
-        
-
         Symbol start = new Symbol(true, 0, -1, -1);
         start.setType("void");
         start.setSlotloc(0);
@@ -37,7 +32,6 @@ public class SymbolList {
         symbolBlockList.add(funSymbolBlock);
         symbolBlockList.add(stringSymbolBlock);
         symbolBlockList.add(globalSymbolBlock);
-        
     }
     /**
      * 获取函数block
@@ -143,19 +137,4 @@ public class SymbolList {
             return fun;
     }
     
-    public void print() {
-        for (int i = 0; i < symbolBlockList.size(); i++) {
-            String id;
-            if (i == 0) {
-                id = "Function Block";
-            } else if (i == 1) {
-                id = "String Block";
-            } else if (i == 2) {
-                id = "Glova Block";
-            } else {
-                id = String.valueOf(i);
-            }
-            System.out.println(id+"->"+symbolBlockList.get(i));
-        }
-    }
 }

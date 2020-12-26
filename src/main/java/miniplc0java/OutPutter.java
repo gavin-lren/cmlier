@@ -4,43 +4,38 @@ import miniplc0java.analyser.*;
 import miniplc0java.instruction.*;
 import miniplc0java.symbol.*;
 
-
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Map;
-import java.util.jar.Attributes.Name;
 
 public class OutPutter {
     private List<Byte> outList = new ArrayList<>();
     private Analyser analyser;
 
     public List<Byte> getBinaryList() {
-        /* magic、version */
+        /**  magic和version */
         outList.addAll(byteTrans(4, 0x72303b3e));
         outList.addAll(byteTrans(4, 1));
+
         int preGlobalSymbolTableSize = analyser.symbolList.getGloba().getSize();
         int preFunctionSymbolTableSize = analyser.symbolList.getFun().getSize();
         SymbolBlock globalTable = analyser.symbolList.getGloba();
         globalTable.cat(analyser.symbolList.getFun());
         globalTable.cat(analyser.symbolList.getString());
 
-        // count
+        /** 常量 */
         outList.addAll(byteTrans(4, globalTable.getSize()));
         int i = 0;
         for (Map.Entry<String, Symbol> entry : globalTable.getSymbolBlock().entrySet()) {
             String name = entry.getKey();
             Symbol sym = entry.getValue();
-
-            // isConst
-            if (i >= preGlobalSymbolTableSize || sym.isConstant())
+            if (i >= preGlobalSymbolTableSize || sym.isConstant()) {
                 outList.addAll(byteTrans(1, 1));
-            else
+            } else {
                 outList.addAll(byteTrans(1, 0));
-
+            }
             if (i >= preGlobalSymbolTableSize) {
                 outList.addAll(byteTrans(4, name.length()));
                 outList.addAll(byteTrans(name));
@@ -51,46 +46,37 @@ public class OutPutter {
             i++;
         }
 
-        /** function */
-
+        /** 函数 */
         SymbolBlock functionTable = analyser.symbolList.getFun();
-        // count
         outList.addAll(byteTrans(4, functionTable.getSize()));
         i = 0;
         for (Map.Entry<String, Symbol> entry : functionTable.getSymbolBlock().entrySet()) {
-
             Symbol fn = entry.getValue();
-
             outList.addAll(byteTrans(4, fn.getGlobal()));
             outList.addAll(byteTrans(4, fn.getSlotret()));
             outList.addAll(byteTrans(4, fn.getSlotparam()));
             outList.addAll(byteTrans(4, fn.getSlotloc()));
             outList.addAll(byteTrans(4, fn.getInList().size()));
-
             for (Instruction ins : fn.getInList().getInstructionList()) {
-                // instruction
+                /** 指令集 */
                 outList.addAll(byteInstruction(ins.getOpt()));
                 if (ins.isIsreloc()) {
                     if (ins.getOpt() == Operation.CALLNAME) {
                         outList.addAll(byteTrans(4, ins.getNum_32() + preGlobalSymbolTableSize));
                     } else if (ins.getOpt() == Operation.PUSH) {
-                        outList.addAll(
-                                byteTrans(8, (long)(ins.getNum_64() + preGlobalSymbolTableSize + preFunctionSymbolTableSize)));
+                        outList.addAll(byteTrans(8, (long)(ins.getNum_64() + preGlobalSymbolTableSize + preFunctionSymbolTableSize)));
                     }
                 }
-
                 else if (ins.isis_n()) {
                     if (ins.getOpt() == Operation.PUSH && ins.isIs_d()) {
                         outList.addAll(byteTrans(8, ins.getNum_d()));
                         
                     } else if (ins.getOpt() == Operation.PUSH) {
                         outList.addAll(byteTrans(8, ins.getNum_64()));
-                    }
-                    else {
+                    } else {
                         outList.addAll(byteTrans(4, ins.getNum_32()));
                     }
                 }
-
             }
         }
         return outList;
@@ -105,18 +91,16 @@ public class OutPutter {
     }
 
     public void print(PrintStream output) throws IOException {
-        int a[] = new int[8];
+        int ins[] = new int[8];
         byte[] bytes = new byte[outList.size()];
-        for (int k = 0; k < outList.size(); k++) {
-            for (int i = 7; i >= 0; i--) {
-                a[i] = (outList.get(k) >> i) & 0x0001;
+        for (int i = 0; i < outList.size(); i++) {
+            for (int j = 7; j >= 0; j--) {
+                ins[j] = (outList.get(i) >> j) & 0x0001;
             }
-            bytes[k] = outList.get(k);
-            
+            bytes[i] = outList.get(i);
         }
         output.write(bytes);
     }
-
 
     public List<Byte> byteTrans(int length, long num){
         ArrayList<Byte> bytes = new ArrayList<>();
@@ -124,7 +108,6 @@ public class OutPutter {
         for(int i = 0; i < length; i++){
             bytes.add((byte)((num >> (start - i*8)) & 0xFF));
         }
-
         return bytes;
     }
 
@@ -135,7 +118,6 @@ public class OutPutter {
         for(int i = 0; i < length; i++){
             bytes.add((byte)((val >> (start - i*8)) & 0xFF));
         }
-
         return bytes;
     }
 

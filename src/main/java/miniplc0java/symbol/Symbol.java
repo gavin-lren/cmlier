@@ -1,12 +1,12 @@
 package miniplc0java.symbol;
 
-import miniplc0java.instruction.InstructionList;
+import miniplc0java.instruction.*;
 
 public class Symbol {
-    /**
-     * true is fun/false is var
-     */
+    /** 符号表中是函数还是变量 */
     private boolean isFunOrVar;
+
+    /** 符号类型/全局位置/局部位置/参数个数 */
     private String type;
     private int global;
     private int local;
@@ -48,7 +48,25 @@ public class Symbol {
         this.param = param;
     }
 
-    //--Fun--
+    /**
+     * 初始化符号（函数/变量）
+     * @param isFunOrVar
+     * @param global
+     * @param local
+     * @param param
+     */
+    public Symbol(boolean isFunOrVar, int global, int local, int param) {
+        this.isFunOrVar = isFunOrVar;
+        this.global = global;
+        this.local = local;
+        this.param = param;
+        if (isFunOrVar)
+            this.inList = new InstructionList();
+        else
+            this.isConstant = this.isGlobal = this.isInitialized = this.isParam = false;
+    }
+    
+    /** 函数位置/参数/返回值/函数指令集 */
     private int slotparam;
     private int slotloc;
     private int slotret;
@@ -87,7 +105,7 @@ public class Symbol {
     }
     
 
-    //--Var--
+    //变量定义/全局变量/初始化/是否为参数
     private boolean isConstant;
     private boolean isGlobal;
     private boolean isInitialized;
@@ -126,36 +144,7 @@ public class Symbol {
     }
     
 
-    //
-    public Symbol(boolean isFunOrVar, int global, int local, int param) {
-        this.isFunOrVar = isFunOrVar;
-        this.global = global;
-        this.local = local;
-        this.param = param;
-        if (isFunOrVar)
-            this.inList = new InstructionList();
-        else
-            this.isConstant = this.isGlobal = this.isInitialized = this.isParam = false;
-    }
     
-    @Override
-    public String toString() {
-        if (this.isFunOrVar == true) {
-            return "index_global: " + getGlobal()
-                    +
-        " index_local: " +  getLocal() + 
-        " index_prarm: " + getParam() +
-        " rettype:" + type
-                    + 
-        " param_slot:" + slotparam + 
-        " loc_slot:" + slotloc +
-        " ret_slot" + slotret +
-        "\n" + inList.toString();
-        }
-        return "is Constant: " + isConstant + " is Global:" + isGlobal + 
-        " is Param:" + isParam +
-        " datatype:" + type + "\n";
-    }
 }
 
     

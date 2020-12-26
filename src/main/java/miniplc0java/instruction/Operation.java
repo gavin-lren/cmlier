@@ -1,6 +1,7 @@
 package miniplc0java.instruction;
 
 public enum Operation {
+    /**指令类型 */
     NOP,
     PUSH,
     POP,

@@ -1,10 +1,12 @@
 package miniplc0java.tokenizer;
 
+import miniplc0java.util.*;
+
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Scanner;
 
-import miniplc0java.util.Pos;
+
 
 
 public class StringIter {
