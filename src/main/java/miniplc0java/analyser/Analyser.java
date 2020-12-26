@@ -574,7 +574,6 @@ public final class Analyser {
             throw new AnalyzeError(ErrorCode.InvalidReturn, type.getStartPos());
         }
         fun.inList.add(new Instruction(Operation.RET));
-        expect(TokenType.SEMICOLON);
     }
 
     private void analyseContinue() throws CompileError {
