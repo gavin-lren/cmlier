@@ -121,7 +121,7 @@ public class Tokenizer {
     private Token lexIdentOrKeyword() throws TokenizeError {
         Pos pre = it.currentPos();
         StringBuilder ob = new StringBuilder("");
-        while (Character.isDigit(it.peekChar()) || Character.isAlphabetic(it.peekChar())||	Character.peekChar() == '_') {
+        while (Character.isDigit(it.peekChar()) || Character.isAlphabetic(it.peekChar())||it.peekChar() == '_') {
             ob.append(it.peekChar());
             it.nextChar();
         }
