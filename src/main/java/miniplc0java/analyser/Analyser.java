@@ -511,7 +511,7 @@ public final class Analyser {
             if (peeked.getTokenType() == TokenType.L_BRACE) {
                 analyseStmt();
             } else if (peeked.getTokenType() == TokenType.IF_KW) {
-                analyseBlockstmt();
+                analyseIf();
             }
             fun.inList.get(elsesize - 1).setNum_32(fun.inList.size() - elsesize);
             peeked = peek();
