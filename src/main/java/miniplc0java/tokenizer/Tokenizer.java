@@ -160,7 +160,8 @@ public class Tokenizer {
     /** 操作符或非法 */
     private Token lexOperatorOrUnknown() throws TokenizeError {
         Pos pre = it.currentPos();
-        switch (it.nextChar()) {
+        char now = it.nextChar();
+        switch (now) {
             case '+':
                 return new Token(TokenType.PLUS, '+', pre, it.currentPos());
             case '-':
@@ -187,6 +188,7 @@ public class Tokenizer {
                     it.nextChar();
                     return new Token(TokenType.NEQ, "!=", pre, it.currentPos());
                 }
+                else throw new TokenizeError(ErrorCode.InvalidInput, it.currentPos());
             case '<':
                 if (it.peekChar() == '=') {
                     it.nextChar();
@@ -214,6 +216,7 @@ public class Tokenizer {
             case ';':
                 return new Token(TokenType.SEMICOLON, ';', pre, it.currentPos());
             default:
+                System.out.println(now);
                 // 不认识这个输入，摸了
                 throw new TokenizeError(ErrorCode.InvalidInput, it.previousPos());
         }
@@ -231,7 +234,8 @@ public class Tokenizer {
         //判断是否为转义字符
         if (it.peekChar() == '\\') {
             it.nextChar();
-            switch (it.peekChar()) {
+            obs = it.peekChar();
+            switch (obs) {
                 case '\\':
                     obs = '\\';
                     it.nextChar();
@@ -286,7 +290,7 @@ public class Tokenizer {
                     break;
                 case '\n':
                     throw new TokenizeError(ErrorCode.InvalidInput, pre);
-                case '\\':
+                case '\\': {
                     it.nextChar();
                     char peeked = it.peekChar();
                     switch (peeked) {
@@ -317,11 +321,14 @@ public class Tokenizer {
                         default:
                             throw new TokenizeError(ErrorCode.InvalidInput, pre);
                     }
+                    break;
+                }
                 default:
                     obs.append(it.nextChar());
             }
         }
         it.nextChar();
+        System.out.println(obs.toString());
         return new Token(TokenType.STRING_LITERAL, obs, pre, it.currentPos());
     }
 

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import java.util.List;
 import java.util.Map;
+import java.util.jar.Attributes.Name;
 
 public class OutPutter {
     private List<Byte> outList = new ArrayList<>();
@@ -148,48 +149,11 @@ public class OutPutter {
         return bytes;
     }
 
-    public List<Byte> strLength(String str) {
+    public List<Byte> byteTrans(String str) {
         List<Byte> str_array=new ArrayList<>();
         for (int i = 0; i < str.length(); i ++) {
             char ch = str.charAt(i);
             str_array.add((byte)(ch & 0xFF));
-        }
-
-        return str_array;
-    }
-
-    public List<Byte> byteTrans(String str) {
-        List<Byte> str_array = new ArrayList<>();
-
-        for (int i = 0; i < str.length(); i ++){
-            char ch = str.charAt(i);
-
-            if (ch == '\\'){
-                if (i != str.length() - 1){
-                    if (str.charAt(i + 1) == 'n'){
-                        str_array.add((byte) (0x0a));
-                    }
-                    else if (str.charAt(i + 1) == 'r') {
-                        str_array.add((byte) (0x0d));
-                    }
-                    else if (str.charAt(i + 1) == 't') {
-                        str_array.add((byte) (0x09));
-                    }
-                    else if (str.charAt(i + 1) == '\'') {
-                        str_array.add((byte) (0x27));
-                    }
-                    else if (str.charAt(i + 1) == '\"') {
-                        str_array.add((byte) (0x22));
-                    }
-                    else if (str.charAt(i + 1) == '\\') {
-                        str_array.add((byte) (0x5c));
-                    }
-
-                    i ++;
-                }
-                else str_array.add((byte)(ch & 0xFF));
-            }
-            else str_array.add((byte)(ch & 0xFF));
         }
 
         return str_array;
