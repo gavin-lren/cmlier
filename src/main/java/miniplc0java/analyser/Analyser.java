@@ -383,7 +383,7 @@ public final class Analyser {
         } else {
             fun.inList.add(new Instruction(Operation.LOCA,true,var.getLocal()));
         }
-        if(var.getType().equals(analyseExprB())){
+        if(!var.getType().equals(analyseExprB())){
             throw new AnalyzeError(ErrorCode.InvalidReturn, name.getStartPos());
         }
         fun.inList.add(new Instruction(Operation.STORE_64));
@@ -473,6 +473,7 @@ public final class Analyser {
                     analyseContinue();
                     break;
                 default:
+                    
                     throw new AnalyzeError(ErrorCode.InvalidReturn, peeked.getStartPos());
             }
     }
@@ -560,7 +561,8 @@ public final class Analyser {
         isRet = true;
         String ret;
         Token type = expect(TokenType.RETURN_KW);
-        var peeked=peek();
+        var peeked = peek();
+        
         if (peeked.getTokenType() != TokenType.SEMICOLON) {
             fun.inList.add(new Instruction(Operation.ARGA, 0));
             ret = analyseExprB();
@@ -569,6 +571,8 @@ public final class Analyser {
             ret = "void";
             expect(TokenType.SEMICOLON);
         }
+        System.out.println(ret);
+        System.out.println(fun.getType());
         if (!ret.equals(fun.getType())) {
             throw new AnalyzeError(ErrorCode.InvalidReturn, type.getStartPos());
         }
@@ -719,7 +723,7 @@ public final class Analyser {
                 name = expect(TokenType.PLUS);
             else
                 name = expect(TokenType.MINUS);
-            flag = analyseExprE();
+            flag = analyseExprD();
             if (!ret.equals(flag)) {
                 throw new AnalyzeError(ErrorCode.InvalidReturn, name.getStartPos());
             }
@@ -798,7 +802,7 @@ public final class Analyser {
         var peeked = peek();
         while (peeked.getTokenType() == TokenType.AS_KW) {
             expect(TokenType.AS_KW);
-            Token name = expect(TokenType.IDENT);
+            Token name = expect(TokenType.TY_KW);
             switch (name.getValueString().toLowerCase()) {
                 case "int":
                     if (ret.equals("double")) {
@@ -809,6 +813,7 @@ public final class Analyser {
                 case "double":
                     if (ret.equals("int")) {
                         fun.inList.add(new Instruction(Operation.ITOF));
+                        ret = "double";
                     }
                     break;
                 default:
