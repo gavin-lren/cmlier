@@ -935,6 +935,8 @@ public final class Analyser {
                 } 
                 else {
                     Symbol var = symbolList.find(name.getValueString());
+                    System.out.println(name.getValueString());
+                    System.out.println("tttttttttttttttt"+var);
                     if (var == null || var.isFunOrVar() == true) {
                         throw new AnalyzeError(ErrorCode.NotDeclared, name.getStartPos());
                     }

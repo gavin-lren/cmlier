@@ -113,7 +113,7 @@ public class SymbolList {
         SymbolBlock loc = getNow();
         do{
             out = loc.getValue(name);
-            if (loc.getUplevel() == -1 || out == null) {
+            if (loc.getUplevel() == -1) {
                 break;
             }
             loc = symbolBlockList.get(loc.getUplevel());
