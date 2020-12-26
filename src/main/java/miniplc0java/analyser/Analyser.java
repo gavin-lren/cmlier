@@ -216,12 +216,11 @@ public final class Analyser {
 
         expect(TokenType.L_PAREN);
         var peeked = peek();
-        if (peeked.getTokenType() == TokenType.CONST_KW || peeked.getTokenType() == TokenType.IDENT) {
+
+        if (peeked.getTokenType()!=TokenType.R_PAREN) {
             analyseFunParList();
         }
-
-        fun.setParam(slotparam);
-
+        fun.setSlotparam(slotparam);
         expect(TokenType.R_PAREN);
         expect(TokenType.ARROW);
 
