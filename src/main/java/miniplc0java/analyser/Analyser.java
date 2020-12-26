@@ -571,8 +571,7 @@ public final class Analyser {
             ret = "void";
             expect(TokenType.SEMICOLON);
         }
-        System.out.println(ret);
-        System.out.println(fun.getType());
+        
         if (!ret.equals(fun.getType())) {
             throw new AnalyzeError(ErrorCode.InvalidReturn, type.getStartPos());
         }
