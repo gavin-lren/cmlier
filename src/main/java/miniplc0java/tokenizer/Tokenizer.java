@@ -98,7 +98,7 @@ public class Tokenizer {
                     for (int i = 0; i < outint; i++) {
                         k = k * 10;
                     }
-                    if (op == '+') {
+                    if (op == '+') { 
                         outdouble = outdouble * k;
                     } else {
                         outdouble = outdouble / k;
@@ -121,7 +121,7 @@ public class Tokenizer {
     private Token lexIdentOrKeyword() throws TokenizeError {
         Pos pre = it.currentPos();
         StringBuilder ob = new StringBuilder("");
-        while (Character.isDigit(it.peekChar()) || Character.isAlphabetic(it.peekChar())) {
+        while (Character.isDigit(it.peekChar()) || Character.isAlphabetic(it.peekChar())||	Character.peekChar() == '_') {
             ob.append(it.peekChar());
             it.nextChar();
         }
