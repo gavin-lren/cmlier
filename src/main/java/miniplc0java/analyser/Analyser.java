@@ -233,7 +233,7 @@ public final class Analyser {
             slotret = 1;
         }
         fun.setSlotret(slotret);
-
+ 
         symbolList.getFun().putValue(name.getValueString(), fun);
 
         analyseBlockstmt();
