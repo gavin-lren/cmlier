@@ -233,7 +233,7 @@ public final class Analyser {
             slotret = 1;
         }
         fun.setSlotret(slotret);
- 
+
         symbolList.getFun().putValue(name.getValueString(), fun);
 
         analyseBlockstmt();
@@ -882,8 +882,9 @@ public final class Analyser {
                 return "double";
             case CHAR_LITERAL:
                 expect(TokenType.CHAR_LITERAL);
-                int ch =(int)(peeked.getValue());
-                fun.inList.add(new Instruction(Operation.PUSH,false,(long)ch));
+                int ch = ((int)(char)peeked.getValue()) ;
+                fun.inList.add(new Instruction(Operation.PUSH, false, (long) ch));
+                return "int";
             case L_PAREN:
                 expect(TokenType.L_PAREN);
                 String ret=analyseExprB();

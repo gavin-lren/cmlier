@@ -98,7 +98,7 @@ public class Tokenizer {
                     for (int i = 0; i < outint; i++) {
                         k = k * 10;
                     }
-                    if (op == '+') { 
+                    if (op == '+') {
                         outdouble = outdouble * k;
                     } else {
                         outdouble = outdouble / k;
@@ -269,6 +269,7 @@ public class Tokenizer {
         }
         //判断是否为单引号
         if (it.peekChar() == '\'') {
+            it.nextChar();
             return new Token(TokenType.CHAR_LITERAL, obs, pre, it.currentPos());
         }
         else {
